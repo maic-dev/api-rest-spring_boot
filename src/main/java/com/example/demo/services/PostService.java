@@ -27,11 +27,11 @@ public class PostService {
     }
 
     public Publicacion savePublicacion(PostDTO postDTO) {
-        Usuario usuario = userRepository.findById(postDTO.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + postDTO.getUsuarioId()));
+        Usuario usuario = userRepository.findById(postDTO.usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + postDTO.usuarioId));
 
         Publicacion publicacion = new Publicacion();
-        publicacion.setDescription(postDTO.getDescription());
+        publicacion.setDescription(postDTO.description);
         publicacion.setUsuario(usuario);
         return postRepository.save(publicacion);
     }

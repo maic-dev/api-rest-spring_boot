@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.UserDTO;
+import com.example.demo.models.Rol;
 import com.example.demo.models.Usuario;
+import com.example.demo.repositories.IRolRepository;
 import com.example.demo.repositories.IUserRepository;
 
 import de.mkammerer.argon2.Argon2;
@@ -20,29 +23,41 @@ public class UserService {
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    private IRolRepository rolRepository;
+
     public ArrayList<Usuario> getUsuarios() {
         return (ArrayList<Usuario>) userRepository.findAll();
     }
 
-    public Usuario saveUsuario(Usuario user) {
-
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+    public Usuario saveUsuario(UserDTO userDTO) {
+        if (userRepository.findByUsername(userDTO.username) != null) {
             throw new RuntimeException("El usuario ya existe");
         }
 
-        // Hashear la contraseña utilizando argon2-jvm
+        // Obtener el rol desde la base de datos
+        Rol rol = rolRepository.findById(userDTO.rol_id)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + userDTO.rol_id));
+
+        // Hashear la contraseña
         Argon2 argon2 = Argon2Factory.create();
-        String hash = argon2.hash(2, 65536, 1, user.getPassword());
+        String hash = argon2.hash(2, 65536, 1, userDTO.password);
+
+        // Crear entidad Usuario desde el DTO
+        Usuario user = new Usuario();
+        user.setFullname(userDTO.fullname);
+        user.setUsername(userDTO.username);
         user.setPassword(hash);
+        user.setRol(rol);
 
         return userRepository.save(user);
     }
 
-    public Usuario getUsuarioById(Long id) {
+    public Usuario getUsuarioById(String id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public Usuario updateUsuario(Long id, Usuario user) {
+    public Usuario updateUsuario(String id, Usuario user) {
         Usuario existingUser = userRepository.findById(id).orElse(null);
         if (existingUser != null) {
             user.setId(id);
@@ -51,7 +66,7 @@ public class UserService {
         return null;
     }
 
-    public void deleteUsuario(Long id) {
+    public void deleteUsuario(String id) {
         userRepository.deleteById(id);
     }
 
@@ -65,5 +80,5 @@ public class UserService {
         Argon2 argon2 = Argon2Factory.create();
         return argon2.verify(findUser.getPassword(), user.getPassword());
     }
-    
+
 }

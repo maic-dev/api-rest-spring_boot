@@ -11,7 +11,7 @@ import com.example.demo.models.Usuario;
 //Se encargan de definir y ejecutar las consultas directas a las db
 
 @Repository
-public interface IUserRepository extends JpaRepository<Usuario, Long> {
+public interface IUserRepository extends JpaRepository<Usuario, String> {
 
     @Query("FROM Usuario u WHERE u.username = :username AND u.password = :password")
     Usuario signIn(@Param("username") String username, @Param("password") String password);

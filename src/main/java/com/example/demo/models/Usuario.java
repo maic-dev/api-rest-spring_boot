@@ -8,7 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,9 +18,8 @@ import jakarta.persistence.Table;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column
     private String fullname;
@@ -32,11 +33,15 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Publicacion> publicacions;
 
-    public Long getId() {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "rol_id", referencedColumnName = "id")
+    private Rol rol;
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -64,7 +69,7 @@ public class Usuario {
         this.password = password;
     }
 
-        public List<Publicacion> getPublicacions() {
+    public List<Publicacion> getPublicacions() {
         return publicacions;
     }
 
@@ -72,4 +77,11 @@ public class Usuario {
         this.publicacions = publicacions;
     }
 
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
 }

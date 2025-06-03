@@ -14,9 +14,8 @@ import jakarta.persistence.Table;
 public class Publicacion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column
     private String description;
@@ -25,11 +24,11 @@ public class Publicacion {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
